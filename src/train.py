@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from modelClass import Model
 import torch.optim as opt
 data = DatasetCreate()
-train_data = DataLoader(data, batch_size=6, shuffle=True , sampler=None, num_workers = 4)
+train_data = DataLoader(data,   batch_size=12, shuffle=True , sampler=None, num_workers = 4)
 
 # data =np.loadtxt('data/train.csv', delimiter=",", skiprows=1, dtype=np.float)
 
@@ -24,35 +24,27 @@ model = Model()
 
 
 # """ optimizer """
-optimizer = opt.SGD(model.parameters(), lr=.04)
+optimizer = opt.Adam(model.parameters(), lr=.05)
 
 # """ loss function """
-loss_fun = torch.nn.NLLLoss(size_average=False)
+loss_fun = torch.nn.CrossEntropyLoss(size_average=True)
 
+for i in range(2):
+    for batch_no, batch_data in enumerate(train_data):
+        print("batch_no = ", batch_no)
+        input, labels = batch_data
+        train_x = torch.tensor(input, requires_grad=False, dtype = torch.float)
+        train_y = torch.tensor(labels, requires_grad=False, dtype = torch.long)
+        model.zero_grad() 
+        out = model(train_x)
+        print(out)
+        i, pred =  out.max(1)
+        print("predic = ", pred)
+        print("out = ", train_y.view(-1,))
+        loss = loss_fun(out, train_y.view(-1,))
+        print(loss.item())
+        loss.backward()
+        for param in model.parameters():
+            print("parameter grad sum = ", param.grad.data.sum())
+        optimizer.step()
 
-for batch_no, batch_data in enumerate(train_data):
-    print("batch_no = ", batch_no)
-    input, labels = batch_data
-    train_x = torch.tensor(input, requires_grad=False, dtype = torch.float)
-    train_y = torch.tensor(labels, requires_grad=False, dtype = torch.long)
-    optimizer.zero_grad()
-    y_predict = model(train_x)
-    print(y_predict)
-    print(train_y.view(6,))
-    loss = loss_fun(y_predict, train_y.view(6,))
-    loss.backward()
-    optimizer.step()
-
-# class labels = ["poistive", "negative"]
-# for train_x, train_y  in data:
-#     # print(train_x)
-#     train_x = torch.tensor(train_x, requires_grad=False, dtype = torch.float)
-#     train_y = torch.tensor([1,2], requires_grad=False, dtype = torch.float)
-#     print(train_y, )
-#     # optimizer.zero_grad()
-#     # y_predict = model(train_x)
-#     # print(y_predict)
-#     # loss = loss_fun(y_predict, train_y)
-#     # print(loss.item())
-#     # loss.backward()
-#     # optimizer.step
