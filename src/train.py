@@ -5,26 +5,17 @@ from torch.utils.data import DataLoader
 from modelClass import Model
 import torch.optim as opt
 data = DatasetCreate()
-train_data = DataLoader(data,   batch_size=12, shuffle=True , sampler=None, num_workers = 4)
+train_data = DataLoader(data,   batch_size=8, shuffle=True , sampler=None, num_workers = 4)
 
-# data =np.loadtxt('data/train.csv', delimiter=",", skiprows=1, dtype=np.float)
-
-# train_x = torch.tensor(data[:,0:-1], requires_grad=True, dtype = torch.float)
-# train_y = torch.tensor(data[:,[-1]], requires_grad=True, dtype = torch.float)
 
 # """ model """
 model = Model()
     
-# loss_fun = torch.nn.CrossEntropyLoss(size_average=True)
-# optimizer = opt.Adam(model.parameters(), lr=.01)
-# for lables, data in zip(train_x, train_y):
-#     y_predict = model(data)
-#     print(y_predict)
 
 
 
 # """ optimizer """
-optimizer = opt.Adam(model.parameters(), lr=.05)
+optimizer = opt.Adam(model.parameters(), lr=.07)
 
 # """ loss function """
 loss_fun = torch.nn.CrossEntropyLoss(size_average=True)
@@ -48,3 +39,4 @@ for i in range(2):
             print("parameter grad sum = ", param.grad.data.sum())
         optimizer.step()
 
+torch.save(model, 'model/model.pt')
